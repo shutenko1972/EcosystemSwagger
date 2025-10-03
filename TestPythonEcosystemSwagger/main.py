@@ -20,7 +20,7 @@ class APIHandler(BaseHTTPRequestHandler):
     
     def _set_cors_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
     
     def do_OPTIONS(self):
@@ -84,6 +84,35 @@ class APIHandler(BaseHTTPRequestHandler):
         
         elif parsed_path.path == '/api/Root':
             self._send_response({"message": "Service API"})
+        
+        elif parsed_path.path == '/api/profile':
+            # Проверяем сессию через query параметры
+            query_params = parse_qs(parsed_path.query)
+            session_token = query_params.get('sessionToken', [None])[0]
+            if not session_token or not self._get_session(session_token):
+                self._send_response({"error": "Invalid session"}, 401)
+                return
+            
+            self._send_response({
+                "username": "Vitaliy Shutenko",
+                "email": "v_shutenko@example.com",
+                "role": "User"
+            })
+        
+        elif parsed_path.path == '/api/chat/history':
+            # Проверяем сессию через query параметры
+            query_params = parse_qs(parsed_path.query)
+            session_token = query_params.get('sessionToken', [None])[0]
+            if not session_token or not self._get_session(session_token):
+                self._send_response({"error": "Invalid session"}, 401)
+                return
+            
+            self._send_response({
+                "messages": [
+                    {"id": 1, "text": "Hello, how are you?", "type": "user", "timestamp": "2024-01-15T10:30:00"},
+                    {"id": 2, "text": "I'm doing well, thank you!", "type": "assistant", "timestamp": "2024-01-15T10:30:05"}
+                ]
+            })
         
         else:
             self._send_response({"error": "Endpoint not found"}, 404)
@@ -153,10 +182,14 @@ class APIHandler(BaseHTTPRequestHandler):
                               "<strong><li>Чат (Chat)</li></strong>" +
                               "<li>Отправка сообщения в AI-чат</li>" +
                               "<li>Очистка истории чата</li>" +
-                              "<li>Копирование текста ответа</li><br>" +
+                              "<li>Копирование текста ответа</li>" +
+                              "<li>Обновление сообщения</li>" +
+                              "<li>Получение истории чата</li><br>" +
                               "<strong><li>Настройки модели (Settings)</li></strong>" +
                               "<li>Установка параметра температуры AI-модели</li>" +
                               "<li>Установка параметра Top-P AI-модели</li><br>" +
+                              "<strong><li>Профиль (Profile)</li></strong>" +
+                              "<li>Получение информации о профиле</li><br>" +
                               "<strong><li>Системные (System)</li></strong>" +
                               "<li>Проверка работоспособности сервера </li>" +
                               "<li>Получение информации о сервере</li>" +
@@ -409,6 +442,87 @@ class APIHandler(BaseHTTPRequestHandler):
                         }
                     }
                 },
+                "/api/chat/update": {
+                    "put": {
+                        "tags": ["Chat"],
+                        "summary": "Обновление сообщения в чате",
+                        "requestBody": {
+                            "content": {
+                                "application/x-www-form-urlencoded": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "messageId": {"type": "string"},
+                                            "newMessage": {"type": "string"},
+                                            "sessionToken": {"type": "string"}
+                                        },
+                                        "required": ["messageId", "newMessage", "sessionToken"]
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {
+                            "200": {
+                                "description": "Сообщение обновлено",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/UpdateResponse"
+                                        }
+                                    }
+                                }
+                            },
+                            "401": {
+                                "description": "Неверная сессия",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/ErrorResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/api/chat/history": {
+                    "get": {
+                        "tags": ["Chat"],
+                        "summary": "Получение истории чата",
+                        "parameters": [
+                            {
+                                "name": "sessionToken",
+                                "in": "query",
+                                "required": True,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "История чата",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/ChatHistoryResponse"
+                                        }
+                                    }
+                                }
+                            },
+                            "401": {
+                                "description": "Неверная сессия",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/ErrorResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "/api/settings/temperature": {
                     "post": {
                         "tags": ["Settings"],
@@ -476,6 +590,44 @@ class APIHandler(BaseHTTPRequestHandler):
                                     "application/json": {
                                         "schema": {
                                             "$ref": "#/components/schemas/TopPResponse"
+                                        }
+                                    }
+                                }
+                            },
+                            "401": {
+                                "description": "Неверная сессия",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/ErrorResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/api/profile": {
+                    "get": {
+                        "tags": ["Profile"],
+                        "summary": "Получение информации о профиле пользователя",
+                        "parameters": [
+                            {
+                                "name": "sessionToken",
+                                "in": "query",
+                                "required": True,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "Информация о профиле",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/ProfileResponse"
                                         }
                                     }
                                 }
@@ -611,6 +763,39 @@ class APIHandler(BaseHTTPRequestHandler):
                             "message": {"type": "string"}
                         }
                     },
+                    "UpdateResponse": {
+                        "type": "object",
+                        "properties": {
+                            "message": {"type": "string"},
+                            "messageId": {"type": "string"},
+                            "newMessage": {"type": "string"}
+                        }
+                    },
+                    "ChatHistoryResponse": {
+                        "type": "object",
+                        "properties": {
+                            "messages": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {"type": "integer"},
+                                        "text": {"type": "string"},
+                                        "type": {"type": "string"},
+                                        "timestamp": {"type": "string", "format": "date-time"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "ProfileResponse": {
+                        "type": "object",
+                        "properties": {
+                            "username": {"type": "string"},
+                            "email": {"type": "string"},
+                            "role": {"type": "string"}
+                        }
+                    },
                     "HealthResponse": {
                         "type": "object",
                         "properties": {
@@ -691,6 +876,14 @@ class APIHandler(BaseHTTPRequestHandler):
                     response = "Погода хорошая"
                 elif message and "время" in message.lower():
                     response = f"Сейчас {datetime.now().strftime('%H:%M')}"
+                elif message and "hello" in message.lower():
+                    response = "Hello! How can I assist you today?"
+                elif message and "weather" in message.lower():
+                    response = "The weather is nice today"
+                elif message and "capital of france" in message.lower():
+                    response = "The capital of France is Paris"
+                elif message and "artificial intelligence" in message.lower():
+                    response = "Artificial Intelligence is the simulation of human intelligence processes by machines"
                 else:
                     response = "Получил ваш запрос"
                 
@@ -744,6 +937,60 @@ class APIHandler(BaseHTTPRequestHandler):
             logger.error(f"Error processing request: {e}")
             self._send_response({"error": "Internal server error"}, 500)
 
+    def do_PUT(self):
+        """Обработка PUT запросов"""
+        parsed_path = urlparse(self.path)
+        form_data = self._get_form_data()
+        
+        try:
+            if parsed_path.path == '/api/chat/update':
+                session_token = form_data.get('sessionToken', [None])[0]
+                if not session_token or not self._get_session(session_token):
+                    self._send_response({"error": "Invalid session"}, 401)
+                    return
+                
+                message_id = form_data.get('messageId', [None])[0]
+                new_message = form_data.get('newMessage', [None])[0]
+                
+                self._send_response({
+                    "message": "Message updated",
+                    "messageId": message_id,
+                    "newMessage": new_message
+                })
+            
+            else:
+                self._send_response({"error": "Endpoint not found"}, 404)
+                
+        except Exception as e:
+            logger.error(f"Error processing PUT request: {e}")
+            self._send_response({"error": "Internal server error"}, 500)
+
+    def do_DELETE(self):
+        """Обработка DELETE запросов"""
+        parsed_path = urlparse(self.path)
+        form_data = self._get_form_data()
+        
+        try:
+            if parsed_path.path == '/api/chat/message':
+                session_token = form_data.get('sessionToken', [None])[0]
+                if not session_token or not self._get_session(session_token):
+                    self._send_response({"error": "Invalid session"}, 401)
+                    return
+                
+                message_id = form_data.get('messageId', [None])[0]
+                
+                self._send_response({
+                    "message": "Message deleted",
+                    "messageId": message_id
+                })
+            
+            else:
+                self._send_response({"error": "Endpoint not found"}, 404)
+                
+        except Exception as e:
+            logger.error(f"Error processing DELETE request: {e}")
+            self._send_response({"error": "Internal server error"}, 500)
+
     def log_message(self, format, *args):
         logger.info(f"{self.client_address[0]} - {format % args}")
 
@@ -772,8 +1019,12 @@ def run_server():
     print("POST /api/chat/send")
     print("POST /api/chat/clear")
     print("POST /api/chat/copy")
+    print("PUT  /api/chat/update")
+    print("GET  /api/chat/history")
+    print("DELETE /api/chat/message")
     print("POST /api/settings/temperature")
     print("POST /api/settings/topp")
+    print("GET  /api/profile")
     print("GET  /api/health")
     print("GET  /api/info")
     print("GET  /api/Root")
