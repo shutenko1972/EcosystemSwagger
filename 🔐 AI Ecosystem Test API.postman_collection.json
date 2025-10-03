@@ -1,0 +1,369 @@
+{
+  "info": {
+    "name": "🔐 AI Ecosystem Test API",
+    "description": "API для аутентификации и проверки функций",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "sessionToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Аутентификация",
+      "item": [
+        {
+          "name": "Вход пользователя в систему",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "Login",
+                  "value": "v_shutenko",
+                  "type": "text"
+                },
+                {
+                  "key": "Password",
+                  "value": "8nEThznM",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('sessionToken', response.sessionToken);",
+                  "    console.log('Session token saved:', response.sessionToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Выход пользователя из системы",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Проверка валидности сессии",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/check-session",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "check-session"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💬 Чат",
+      "item": [
+        {
+          "name": "Отправка сообщения в AI-чат",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "message",
+                  "value": "Привет! Как дела?",
+                  "type": "text"
+                },
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "send"]
+            }
+          }
+        },
+        {
+          "name": "Очистка истории чата",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/clear",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "clear"]
+            }
+          }
+        },
+        {
+          "name": "Копирование текста ответа",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "text",
+                  "value": "Текст для копирования",
+                  "type": "text"
+                },
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/copy",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "copy"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Настройки модели",
+      "item": [
+        {
+          "name": "Установка параметра температуры AI-модели",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "value",
+                  "value": "75",
+                  "type": "text"
+                },
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/settings/temperature",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings", "temperature"]
+            }
+          }
+        },
+        {
+          "name": "Установка параметра Top-P AI-модели",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "value",
+                  "value": "85",
+                  "type": "text"
+                },
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/settings/topp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings", "topp"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🖥️ Системные",
+      "item": [
+        {
+          "name": "Проверка работоспособности сервера",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            }
+          }
+        },
+        {
+          "name": "Получение информации о сервере",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "info"]
+            }
+          }
+        },
+        {
+          "name": "Корневой эндпоинт",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/Root",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Root"]
+            }
+          }
+        },
+        {
+          "name": "Swagger UI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          }
+        },
+        {
+          "name": "Swagger спецификация",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/swagger.json",
+              "host": ["{{baseUrl}}"],
+              "path": ["swagger.json"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "console.log('Base URL:', pm.collectionVariables.get('baseUrl'));",
+          "console.log('Session Token:', pm.collectionVariables.get('sessionToken'));"
+        ]
+      }
+    }
+  ]
+}
