@@ -31,6 +31,7 @@
     <Compile Include="main.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="EcosystemTestAPI.postman_collection.json" />
     <Content Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />

@@ -1,0 +1,484 @@
+{
+  "info": {
+    "name": "AI Ecosystem Test API",
+    "_postman_id": "b1e1e1e1-0000-0000-0000-000000000001",
+    "description": "Collection for testing all endpoints of AI Ecosystem Test API.\n\nLogin: v_shutenko\nPassword: 8nEThznM",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "Login",
+                  "value": "v_shutenko",
+                  "type": "text"
+                },
+                {
+                  "key": "Password",
+                  "value": "8nEThznM",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/auth/login",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "auth", "login" ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save sessionToken to environment variable",
+                  "if (pm.response.code === 200) {",
+                  "  var json = pm.response.json();",
+                  "  pm.environment.set('sessionToken', json.sessionToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/auth/logout",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "auth", "logout" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/auth/check-session",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "auth", "check-session" ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "message",
+                  "value": "Privet",
+                  "type": "text"
+                },
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/chat/send",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "chat", "send" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Clear Chat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/chat/clear",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "chat", "clear" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Copy Text",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "text",
+                  "value": "Text dlya kopirovaniya",
+                  "type": "text"
+                },
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/chat/copy",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "chat", "copy" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Message",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "messageId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "newMessage",
+                  "value": "Novoe soobshchenie",
+                  "type": "text"
+                },
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/chat/update",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "chat", "update" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Message",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "messageId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/chat/message",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "chat", "message" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Chat History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/chat/history?sessionToken={{sessionToken}}",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "chat", "history" ],
+              "query": [
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Set Temperature",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "value",
+                  "value": "100",
+                  "type": "text"
+                },
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/settings/temperature",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "settings", "temperature" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set Top-P",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "value",
+                  "value": "50",
+                  "type": "text"
+                },
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/settings/topp",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "settings", "topp" ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/profile?sessionToken={{sessionToken}}",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "profile" ],
+              "query": [
+                {
+                  "key": "sessionToken",
+                  "value": "{{sessionToken}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/health",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "health" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/info",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "info" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/Root",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "8000",
+              "path": [ "api", "Root" ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "sessionToken",
+      "value": ""
+    }
+  ]
+}
