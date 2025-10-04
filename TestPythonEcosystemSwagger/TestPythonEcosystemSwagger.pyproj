@@ -33,6 +33,12 @@
   <ItemGroup>
     <Content Include="README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="obj\" />
+    <Folder Include="obj\Any CPU\" />
+    <Folder Include="obj\Any CPU\Debug\" />
+    <Folder Include="obj\Debug\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
   <!-- Specify pre- and post-build commands in the BeforeBuild and 
        AfterBuild targets below. -->
